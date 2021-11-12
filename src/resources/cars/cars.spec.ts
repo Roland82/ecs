@@ -15,3 +15,11 @@ describe('POST /cars', () => {
       .expect(200)
   })
 })
+
+describe('GET /cars/:id', () => {
+  it('responds with a 404 when a car with the id cannot be found', async () => {
+    await request(app)
+      .get('/cars/10000000000').send()
+      .expect(404)
+  })
+})

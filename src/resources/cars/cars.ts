@@ -13,5 +13,15 @@ router.post('/',  async (req, res): Promise<Response> => {
   return res.sendStatus(200)
 })
 
+router.get('/:id',  async (req, res): Promise<Response> => {
+  const car = cars.find(e => e.id.toString() === req.params.id)
+
+  if (!car) {
+    return res.sendStatus(404)
+  }
+
+  return res.sendStatus(200)
+})
+
 
 export default router
