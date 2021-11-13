@@ -5,7 +5,7 @@ const { body, validationResult } = require('express-validator');
 
 const router = express.Router()
 
-const cars: Car[] = []
+let cars: Car[] = []
 
 router.post(
   '/',
@@ -34,6 +34,12 @@ router.get('/:id', async (req, res): Promise<Response> => {
 
   const responseBody = serialiseCar(car)
   return res.json(responseBody).status(200)
+})
+
+router.delete('/:id', async (req, res): Promise<Response> => {
+  cars = cars.filter(e => e.id.toString() !== req.params.id)
+
+  return res.sendStatus(200)
 })
 
 
