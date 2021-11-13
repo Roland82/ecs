@@ -1,17 +1,28 @@
 import express, {Response} from 'express'
 import Car from './CarModel'
 import serialiseCar from './carSerialiser'
+const { body, validationResult } = require('express-validator');
 
 const router = express.Router()
 
-
 const cars: Car[] = []
 
-router.post('/', async (req, res): Promise<Response> => {
-  const carId = cars.length + 1
-  cars.push(new Car(carId, req.body.make, req.body.model, req.body.colour, req.body.year))
+router.post(
+  '/',
+  body('make').not().isEmpty(),
+  body('model').not().isEmpty(),
+  body('colour').not().isEmpty(),
+  body('year').not().isEmpty(),
+  async (req, res): Promise<Response> => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.sendStatus(400);
+    }
 
-  return res.status(200).set('Content-Location', `/cars/${carId}`).send()
+    const carId = cars.length + 1
+    cars.push(new Car(carId, req.body.make, req.body.model, req.body.colour, req.body.year))
+
+    return res.status(200).set('Content-Location', `/cars/${carId}`).send()
 })
 
 router.get('/:id', async (req, res): Promise<Response> => {
