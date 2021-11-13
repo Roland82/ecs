@@ -96,3 +96,39 @@ describe('GET /cars/:id', () => {
     expect(getResponse.body.year).toBe(2008)
   })
 })
+
+describe('DELETE /cars/:id', () => {
+  let carResourceUri: string
+  let deleteCarResponseCode: number
+
+  beforeAll(async () => {
+    const carBody = {
+      make: 'Ford',
+      model: 'Fiesta 1.1l',
+      colour: 'Blue',
+      year: 2008,
+    }
+
+    const postResponse = await request(app)
+      .post('/cars').send(carBody)
+      .expect(200)
+
+    carResourceUri = postResponse.headers['content-location']
+
+    const deleteCarResponse = await request(app)
+      .delete(carResourceUri)
+      .expect(200)
+
+    deleteCarResponseCode = deleteCarResponse.statusCode
+  })
+
+  it('responds with a 200 when a car with the id is deleted successfully', () => {
+    expect(deleteCarResponseCode).toBe(200)
+  })
+
+  it('responds with a 404 if the car with the given deleted id is accessed', () => {
+    return request(app)
+      .get(carResourceUri)
+      .expect(404)
+  })
+})
