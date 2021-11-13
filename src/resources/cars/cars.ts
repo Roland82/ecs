@@ -22,7 +22,7 @@ router.post(
     const carId = cars.length + 1
     cars.push(new Car(carId, req.body.make, req.body.model, req.body.colour, req.body.year))
 
-    return res.status(200).set('Content-Location', `/cars/${carId}`).send()
+    return res.status(201).set('Content-Location', `/cars/${carId}`).send()
 })
 
 router.get('/:id', async (req, res): Promise<Response> => {
@@ -39,7 +39,7 @@ router.get('/:id', async (req, res): Promise<Response> => {
 router.delete('/:id', async (req, res): Promise<Response> => {
   cars = cars.filter(e => e.id.toString() !== req.params.id)
 
-  return res.sendStatus(200)
+  return res.sendStatus(204)
 })
 
 

@@ -3,7 +3,7 @@ import app from '../../app'
 
 
 describe('POST /cars', () => {
-  it('responds with a 200 when posted to with all the required data to create a new car', () => {
+  it('responds with a 201 when posted to with all the required data to create a new car', () => {
     const body = {
       make: 'Vauxhall',
       model: 'Astra SRi',
@@ -12,7 +12,7 @@ describe('POST /cars', () => {
     }
     return request(app)
       .post('/cars').send(body)
-      .expect(200)
+      .expect(201)
   })
 
   it('responds with a 400 when posted with a blank car make', () => {
@@ -81,7 +81,7 @@ describe('GET /cars/:id', () => {
     }
     const postResponse = await request(app)
       .post('/cars').send(carBody)
-      .expect(200)
+      .expect(201)
 
     const carResourceLocation = postResponse.headers['content-location']
 
@@ -111,19 +111,18 @@ describe('DELETE /cars/:id', () => {
 
     const postResponse = await request(app)
       .post('/cars').send(carBody)
-      .expect(200)
+      .expect(201)
 
     carResourceUri = postResponse.headers['content-location']
 
     const deleteCarResponse = await request(app)
       .delete(carResourceUri)
-      .expect(200)
 
     deleteCarResponseCode = deleteCarResponse.statusCode
   })
 
-  it('responds with a 200 when a car with the id is deleted successfully', () => {
-    expect(deleteCarResponseCode).toBe(200)
+  it('responds with a 204 when a car with the id is deleted successfully', () => {
+    expect(deleteCarResponseCode).toBe(204)
   })
 
   it('responds with a 404 if the car with the given deleted id is accessed', () => {
