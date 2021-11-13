@@ -10,7 +10,7 @@ describe('POST /cars', () => {
       colour: 'Silver',
       year: 2007,
     }
-    request(app)
+    return request(app)
       .post('/cars').send(body)
       .expect(200)
   })
@@ -18,7 +18,7 @@ describe('POST /cars', () => {
 
 describe('GET /cars/:id', () => {
   it('responds with a 404 when a car with the id cannot be found', () => {
-    request(app)
+    return request(app)
       .get('/cars/10000000000').send()
       .expect(404)
   })
@@ -34,7 +34,7 @@ describe('GET /cars/:id', () => {
       .post('/cars').send(carBody)
       .expect(200)
 
-    const carResourceLocation = postResponse.headers['Content-Location']
+    const carResourceLocation = postResponse.headers['content-location']
 
     const getResponse = await request(app)
       .get(carResourceLocation).send()
