@@ -97,7 +97,7 @@ describe('GET /cars/:id', () => {
   })
 })
 
-describe('DELETE /cars/:id', () => {
+describe('DELETE /cars/:id when deleting a car id that exists', () => {
   let carResourceUri: string
   let deleteCarResponseCode: number
 
@@ -129,5 +129,12 @@ describe('DELETE /cars/:id', () => {
     return request(app)
       .get(carResourceUri)
       .expect(404)
+  })
+})
+
+describe('DELETE /cars/:id when deleting a car id that doesnt exist', () => {
+  it('responds with a 204', () => {
+    return request(app)
+      .delete('/cars/10000000000').expect(204)
   })
 })
