@@ -2,28 +2,32 @@ import express, {Response} from 'express'
 import Car from './CarModel'
 import serialiseCar from './carSerialiser'
 import axios from 'axios'
-import { body, validationResult } from 'express-validator'
+import {check, validationResult} from 'express-validator'
 
 const router = express.Router()
 
 let cars: Car[] = []
 
 const fetchWordsSimilarTo = (word: String) =>
-  axios.get<DataMuseSimilarWordsResponseBody>(`https://api.datamuse.com/words?sl=${word}` )
+  axios.get<DataMuseSimilarWordsResponseBody>(`https://api.datamuse.com/words?sl=${word}`)
     .then(r => r.data.map(e => e.word).join(','))
     .catch(() => null)
 
 
+const validateCarRequestBody = [
+  check('make').not().isEmpty(),
+  check('model').not().isEmpty(),
+  check('colour').not().isEmpty(),
+  check('year').not().isEmpty(),
+]
+
 router.post(
   '/',
-  body('make').not().isEmpty(),
-  body('model').not().isEmpty(),
-  body('colour').not().isEmpty(),
-  body('year').not().isEmpty(),
+  ...validateCarRequestBody,
   async (req, res): Promise<Response> => {
-    const errors = validationResult(req);
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
-      return res.sendStatus(400);
+      return res.sendStatus(400)
     }
 
     const similarWordsToCarMake = await fetchWordsSimilarTo(req.body.make)
@@ -32,13 +36,22 @@ router.post(
     cars.push(new Car(carId, req.body.make, req.body.model, req.body.colour, req.body.year, similarWordsToCarMake))
 
     return res.status(201).set('Content-Location', `/cars/${carId}`).send()
-})
+  })
 
 
 router.put(
   '/:id',
+  ...validateCarRequestBody,
   async (req, res): Promise<Response> => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+      return res.sendStatus(400)
+    }
 
+    const car = cars.find(e => e.id.toString() === req.params?.id)
+    if (car) {
+      car.update(req.body.make, req.body.model, req.body.colour, req.body.year)
+    }
 
     return res.sendStatus(200)
   })

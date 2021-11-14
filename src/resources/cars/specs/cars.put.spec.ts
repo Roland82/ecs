@@ -44,11 +44,25 @@ describe('PUT /cars when updating an existing resource with all required data',(
   })
 })
 
+const createCarAndGetResourceLocation = async () => {
+  const body = {
+    make: "Vauxhall",
+    model: 'Astra SRi',
+    colour: 'Silver',
+    year: 2007,
+  }
 
+  const postResponse = await request(app)
+    .post('/cars').send(body)
+    .expect(201)
+
+  return postResponse.headers['content-location']
+}
 
 
 describe('', () => {
-  it('responds with a 400 when posted with a blank car make', () => {
+  it('responds with a 400 when posted with a blank car make', async () => {
+    const resourceLocation = await createCarAndGetResourceLocation()
     const body = {
       make: '',
       model: 'Astra SRi',
@@ -56,11 +70,12 @@ describe('', () => {
       year: 2007,
     }
     return request(app)
-      .put('/cars').send(body)
+      .put(resourceLocation).send(body)
       .expect(400)
   })
 
-  it('responds with a 400 when posted with a blank car model', () => {
+  it('responds with a 400 when posted with a blank car model', async () => {
+    const resourceLocation = await createCarAndGetResourceLocation()
     const body = {
       make: 'Vauxhall',
       model: '',
@@ -68,11 +83,12 @@ describe('', () => {
       year: 2007,
     }
     return request(app)
-      .put('/cars').send(body)
+      .put(resourceLocation).send(body)
       .expect(400)
   })
 
-  it('responds with a 400 when posted with a blank car colour', () => {
+  it('responds with a 400 when posted with a blank car colour', async () => {
+    const resourceLocation = await createCarAndGetResourceLocation()
     const body = {
       make: 'Vauxhall',
       model: 'Astra SRi',
@@ -80,11 +96,12 @@ describe('', () => {
       year: 2007,
     }
     return request(app)
-      .put('/cars').send(body)
+      .put(resourceLocation).send(body)
       .expect(400)
   })
 
-  it('responds with a 400 when posted with a null car production year', () => {
+  it('responds with a 400 when posted with a null car production year', async () => {
+    const resourceLocation = await createCarAndGetResourceLocation()
     const body = {
       make: 'Vauxhall',
       model: 'Astra SRi',
@@ -92,7 +109,7 @@ describe('', () => {
       year: null,
     }
     return request(app)
-      .put('/cars').send(body)
+      .put(resourceLocation).send(body)
       .expect(400)
   })
 })

@@ -1,10 +1,10 @@
 class Car {
 
   private readonly _id: number
-  private readonly _make: string
-  private readonly _model: string
-  private readonly _colour: string
-  private readonly _year: number
+  private _make: string
+  private _model: string
+  private _colour: string
+  private _year: number
   private readonly _wordsSimilarToMake: string | null
 
   constructor(id: number, make: string, model: string, colour: string, year: number, wordsSimilarToMake: string | null) {
@@ -14,6 +14,13 @@ class Car {
     this._colour = colour
     this._year = year
     this._wordsSimilarToMake = wordsSimilarToMake
+  }
+
+  update(make: string, model: string, colour: string, year: number) {
+    this._make = make
+    this._colour = colour
+    this._year = year
+    this._model = model
   }
 
   get id(): number {
