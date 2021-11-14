@@ -34,6 +34,15 @@ router.post(
     return res.status(201).set('Content-Location', `/cars/${carId}`).send()
 })
 
+
+router.put(
+  '/:id',
+  async (req, res): Promise<Response> => {
+
+
+    return res.sendStatus(200)
+  })
+
 router.get('/:id', async (req, res): Promise<Response> => {
   const car = cars.find(e => e.id.toString() === req.params.id)
 
