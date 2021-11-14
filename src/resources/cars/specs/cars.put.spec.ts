@@ -60,6 +60,58 @@ describe('PUT /cars when updating an existing resource with all required data an
   })
 })
 
+describe('PUT /cars when updating an existing resource with all required data and the word similarity service fails',() => {
+
+  let getResponse: request.Response
+
+  beforeAll(async () => {
+
+    const originalCarBody = {
+      make: "Vauxhall",
+      model: 'Astra SRi',
+      colour: 'Silver',
+      year: 2007,
+    }
+
+    const updatedBody = {
+      make: "Ford",
+      model: 'Fiesta',
+      colour: 'Blue',
+      year: 2020,
+    }
+
+    mockDataMuseApi({ carMake: originalCarBody.make, responseBody: [{ word: 'Test', numSyllables: 1, score: 3}], returnStatusCode: 200 })
+
+    const postResponse = await request(app)
+      .post('/cars').send(originalCarBody)
+      .expect(201)
+
+    const carResourceLocation = postResponse.headers['content-location']
+
+    mockDataMuseApi({ carMake: updatedBody.make, responseBody: [], returnStatusCode: 500 })
+
+    await request(app)
+      .put(carResourceLocation).send(updatedBody)
+      .expect(200)
+
+    getResponse = await request(app)
+      .get(carResourceLocation).send()
+      .expect(200)
+  })
+
+  it('updates the car data to be as per what the user supplied', () => {
+    expect(getResponse.body.id).not.toBeNull()
+    expect(getResponse.body.make).toBe('Ford')
+    expect(getResponse.body.model).toBe('Fiesta')
+    expect(getResponse.body.colour).toBe('Blue')
+    expect(getResponse.body.year).toBe(2020)
+  })
+
+  it('nulls out the similar words', () => {
+    expect(getResponse.body.similarWordsToMake).toBeNull()
+  })
+})
+
 const createCarAndGetResourceLocation = async () => {
   const body = {
     make: "Vauxhall",

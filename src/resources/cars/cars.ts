@@ -8,7 +8,7 @@ const router = express.Router()
 
 let cars: Car[] = []
 
-const fetchWordsSimilarTo = (word: String) =>
+const fetchWordsSimilarTo = (word: String): Promise<string | null> =>
   axios.get<DataMuseSimilarWordsResponseBody>(`https://api.datamuse.com/words?sl=${word}`)
     .then(r => r.data.map(e => e.word).join(','))
     .catch(() => null)
