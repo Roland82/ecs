@@ -1,11 +1,19 @@
 import request from 'supertest'
+import nock from 'nock'
 import app from '../../app'
 
+const dataMuseWordsResponseBody = [
+  {'word': 'Test', 'score': 95, 'numSyllables': 2},
+  {'word': 'Words', 'score': 95, 'numSyllables': 2},
+  {'word': 'Here', 'score': 95, 'numSyllables': 2},
+]
 
 describe('POST /cars', () => {
+
+
   it('responds with a 201 when posted to with all the required data to create a new car', () => {
     const body = {
-      make: 'Vauxhall',
+      make: "Vauxhall",
       model: 'Astra SRi',
       colour: 'Silver',
       year: 2007,
@@ -65,35 +73,53 @@ describe('POST /cars', () => {
 
 })
 
-describe('GET /cars/:id', () => {
-  it('responds with a 404 when a car with the id cannot be found', () => {
+describe('GET /cars/:id when requesting a car id that doesnt exist', () => {
+  it('responds with a 404', () => {
     return request(app)
       .get('/cars/10000000000').send()
       .expect(404)
   })
+})
 
-  it('responds with a 200 and the car data when a previously saved car is found', async () => {
-    const carBody = {
-      make: 'Ford',
-      model: 'Fiesta 1.1l',
-      colour: 'Blue',
-      year: 2008,
-    }
+describe('GET /cars/:id when requesting a car id that exists and the word similarity service provided some data', () => {
+  const carBody = {
+    make: 'Ford',
+    model: 'Fiesta 1.1l',
+    colour: 'Blue',
+    year: 2008,
+  }
+
+  let getResponse: request.Response
+
+  beforeAll(async () => {
+    const dataMuseApiMock = nock('https://api.datamuse.com')
+    dataMuseApiMock.get(`/words?sl=${carBody.make}`).reply(200,dataMuseWordsResponseBody)
+
     const postResponse = await request(app)
       .post('/cars').send(carBody)
       .expect(201)
 
     const carResourceLocation = postResponse.headers['content-location']
 
-    const getResponse = await request(app)
+    getResponse = await request(app)
       .get(carResourceLocation).send()
       .expect(200)
+  })
 
+  it('responds with a 200', async () => {
+    expect(getResponse.statusCode).toBe(200)
+  })
+
+  it('returns the user supplied car data', async () => {
     expect(getResponse.body.id).not.toBeNull()
     expect(getResponse.body.make).toBe('Ford')
     expect(getResponse.body.model).toBe('Fiesta 1.1l')
     expect(getResponse.body.colour).toBe('Blue')
     expect(getResponse.body.year).toBe(2008)
+  })
+
+  it('returns the similar words as a string', async () => {
+    expect(getResponse.body.similarWordsToCarMake).toBe('Test,Words,Here')
   })
 })
 
