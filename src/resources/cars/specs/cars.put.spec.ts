@@ -1,12 +1,20 @@
 import request from 'supertest'
 import app from '../../../app'
+import nock from 'nock'
 
-describe('PUT /cars when updating an existing resource with all required data',() => {
+const dataMuseApiMock = nock('https://api.datamuse.com')
+
+const mockDataMuseApi = (options:{ carMake: string, returnStatusCode: number, responseBody: DataMuseSimilarWordsResponseBody } ) => {
+  dataMuseApiMock.get(`/words?sl=${options.carMake}`).reply(options.returnStatusCode, options.responseBody)
+}
+
+describe('PUT /cars when updating an existing resource with all required data and the word similarity service provided some data',() => {
 
   let getResponse: request.Response
 
   beforeAll(async () => {
-    const body = {
+
+    const originalCarBody = {
       make: "Vauxhall",
       model: 'Astra SRi',
       colour: 'Silver',
@@ -20,11 +28,15 @@ describe('PUT /cars when updating an existing resource with all required data',(
       year: 2020,
     }
 
+    mockDataMuseApi({ carMake: originalCarBody.make, responseBody: [{ word: 'Test', numSyllables: 1, score: 3}], returnStatusCode: 200 })
+
     const postResponse = await request(app)
-      .post('/cars').send(body)
+      .post('/cars').send(originalCarBody)
       .expect(201)
 
     const carResourceLocation = postResponse.headers['content-location']
+
+    mockDataMuseApi({ carMake: updatedBody.make, responseBody: [{ word: 'Updated', numSyllables: 1, score: 3}, { word: 'Words', numSyllables: 1, score: 3}], returnStatusCode: 200 })
 
     await request(app)
       .put(carResourceLocation).send(updatedBody)
@@ -41,6 +53,10 @@ describe('PUT /cars when updating an existing resource with all required data',(
     expect(getResponse.body.model).toBe('Fiesta')
     expect(getResponse.body.colour).toBe('Blue')
     expect(getResponse.body.year).toBe(2020)
+  })
+
+  it('updates the similar words', () => {
+    expect(getResponse.body.similarWordsToMake).toBe('Updated,Words')
   })
 })
 

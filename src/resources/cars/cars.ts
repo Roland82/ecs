@@ -50,7 +50,8 @@ router.put(
 
     const car = cars.find(e => e.id.toString() === req.params?.id)
     if (car) {
-      car.update(req.body.make, req.body.model, req.body.colour, req.body.year)
+      const similarWordsToCarMake = await fetchWordsSimilarTo(req.body.make)
+      car.update(req.body.make, req.body.model, req.body.colour, req.body.year, similarWordsToCarMake)
     }
 
     return res.sendStatus(200)

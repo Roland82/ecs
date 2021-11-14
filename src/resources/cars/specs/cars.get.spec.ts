@@ -10,7 +10,7 @@ const dataMuseWordsDefaultResponseBody = [
 
 const dataMuseApiMock = nock('https://api.datamuse.com')
 
-const mockDataMuseApi = (options:{ carMake: string, returnStatusCode: number, responseBody: any } ) => {
+const mockDataMuseApi = (options:{ carMake: string, returnStatusCode: number, responseBody: DataMuseSimilarWordsResponseBody } ) => {
   dataMuseApiMock.get(`/words?sl=${options.carMake}`).reply(options.returnStatusCode, options.responseBody)
 }
 
@@ -74,7 +74,7 @@ describe('GET /cars/:id when requesting a car id that exists and the word simila
   let getResponse: request.Response
 
   beforeAll(async () => {
-    mockDataMuseApi({ carMake: carBody.make, returnStatusCode: 500, responseBody: {} })
+    mockDataMuseApi({ carMake: carBody.make, returnStatusCode: 500, responseBody: [] })
 
     const postResponse = await request(app)
       .post('/cars').send(carBody)
