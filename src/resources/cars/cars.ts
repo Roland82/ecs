@@ -2,8 +2,9 @@ import express, {Response} from 'express'
 import Car from '../../database/models/car'
 import serialiseCar from './carSerialiser'
 import axios from 'axios'
-import {check, validationResult} from 'express-validator'
+import {check} from 'express-validator'
 import {DataMuseSimilarWordsResponseBody, SimilarWordEntry} from './types'
+import handleValidationErrorMiddleware from './handleValidationErrorMiddleware'
 
 const router = express.Router()
 
@@ -23,12 +24,8 @@ const validateCarRequestBody = [
 router.post(
   '/',
   ...validateCarRequestBody,
+  handleValidationErrorMiddleware,
   async (req, res): Promise<Response> => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.sendStatus(400)
-    }
-
     const similarWordsToCarMake = await fetchWordsSimilarTo(req.body.make)
     const car = await Car.create({ make: req.body.make, model: req.body.model, colour: req.body.colour, year: req.body.year, wordsSimilarToMake: similarWordsToCarMake})
 
@@ -39,12 +36,8 @@ router.post(
 router.put(
   '/:id',
   ...validateCarRequestBody,
+  handleValidationErrorMiddleware,
   async (req, res): Promise<Response> => {
-    const errors = validationResult(req)
-    if (!errors.isEmpty()) {
-      return res.sendStatus(400)
-    }
-
     const car = await Car.findByPk(req.params?.id)
 
     if (car) {
