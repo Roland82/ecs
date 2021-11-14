@@ -2,21 +2,17 @@ import express, {Response} from 'express'
 import Car from './CarModel'
 import serialiseCar from './carSerialiser'
 import axios from 'axios'
-const { body, validationResult } = require('express-validator');
+import { body, validationResult } from 'express-validator'
 
 const router = express.Router()
 
 let cars: Car[] = []
 
-type DataMuseSimilarWordsResponseBody = Array<{ word: string, score: number, numSyllables: number}>
-const fetchWordsSimilarTo = async (word: String) => {
-  const similarWordsResponse = await axios.get<DataMuseSimilarWordsResponseBody>(`https://api.datamuse.com/words?sl=${word}`)
-  if (similarWordsResponse.status === 200) {
-    return similarWordsResponse.data.map(e => e.word).join(',')
-  }
+const fetchWordsSimilarTo = (word: String) =>
+  axios.get<DataMuseSimilarWordsResponseBody>(`https://api.datamuse.com/words?sl=${word}` )
+    .then(r => r.data.map(e => e.word).join(','))
+    .catch(() => null)
 
-  return null
-}
 
 router.post(
   '/',
