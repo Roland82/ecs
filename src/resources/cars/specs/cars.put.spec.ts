@@ -1,12 +1,7 @@
 import request from 'supertest'
 import app from '../../../app'
-import nock from 'nock'
+import {mockDataMuseApi} from './testHelpers'
 
-const dataMuseApiMock = nock('https://api.datamuse.com')
-
-const mockDataMuseApi = (options:{ carMake: string, returnStatusCode: number, responseBody: DataMuseSimilarWordsResponseBody } ) => {
-  dataMuseApiMock.get(`/words?sl=${options.carMake}`).reply(options.returnStatusCode, options.responseBody)
-}
 
 describe('PUT /cars when updating an existing resource with all required data and the word similarity service provided some data',() => {
 

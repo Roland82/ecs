@@ -1,4 +1,4 @@
-import Car from './CarModel'
+import Car from '../../database/models/car'
 
 const serialiseCar = (car: Car) => {
   return {

@@ -1,18 +1,12 @@
 import request from 'supertest'
-import nock from 'nock'
 import app from '../../../app'
+import {mockDataMuseApi} from './testHelpers'
 
 const dataMuseWordsDefaultResponseBody = [
   {'word': 'Test', 'score': 95, 'numSyllables': 2},
   {'word': 'Words', 'score': 95, 'numSyllables': 2},
   {'word': 'Here', 'score': 95, 'numSyllables': 2},
 ]
-
-const dataMuseApiMock = nock('https://api.datamuse.com')
-
-const mockDataMuseApi = (options:{ carMake: string, returnStatusCode: number, responseBody: any } ) => {
-  dataMuseApiMock.get(`/words?sl=${options.carMake}`).reply(options.returnStatusCode, options.responseBody)
-}
 
 describe('DELETE /cars/:id when deleting a car id that exists', () => {
   let carResourceUri: string

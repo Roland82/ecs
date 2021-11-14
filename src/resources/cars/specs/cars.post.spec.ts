@@ -1,16 +1,21 @@
 import request from 'supertest'
 import app from '../../../app'
+import {mockDataMuseApi} from './testHelpers'
+
 
 describe('POST /cars', () => {
   it('responds with a 201 when posted to with all the required data to create a new car', () => {
-    const body = {
-      make: "Vauxhall",
-      model: 'Astra SRi',
-      colour: 'Silver',
-      year: 2007,
+    const carBody = {
+      make: 'Ford',
+      model: 'Fiesta 1.1l',
+      colour: 'Blue',
+      year: 2008,
     }
+
+    mockDataMuseApi({ carMake: carBody.make, returnStatusCode: 200, responseBody: [] })
+
     return request(app)
-      .post('/cars').send(body)
+      .post('/cars').send(carBody)
       .expect(201)
   })
 
