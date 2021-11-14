@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('cars', {
+    await queryInterface.createTable("cars", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -27,10 +27,10 @@ module.exports = {
       wordsSimilarToMake: {
         type: Sequelize.TEXT,
         allowNull: true,
-      }
+      },
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable('cars');
-  }
+    await queryInterface.dropTable("cars");
+  },
 };

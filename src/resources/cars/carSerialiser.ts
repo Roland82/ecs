@@ -1,4 +1,4 @@
-import Car from '../../database/models/car'
+import Car from "../../database/models/car";
 
 const serialiseCar = (car: Car) => {
   return {
@@ -8,7 +8,7 @@ const serialiseCar = (car: Car) => {
     year: car.year,
     colour: car.colour,
     similarWordsToMake: car.wordsSimilarToMake,
-  }
-}
+  };
+};
 
-export default serialiseCar
+export default serialiseCar;
