@@ -25,7 +25,7 @@ module.exports = {
         allowNull: false,
       },
       wordsSimilarToMake: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: true,
       }
     });

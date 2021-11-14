@@ -40,7 +40,7 @@ Car.init({
     allowNull: false
   },
   wordsSimilarToMake: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     field: 'wordsSimilarToMake',
     allowNull: true
   }

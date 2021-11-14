@@ -3,12 +3,13 @@ import Car from '../../database/models/car'
 import serialiseCar from './carSerialiser'
 import axios from 'axios'
 import {check, validationResult} from 'express-validator'
+import {DataMuseSimilarWordsResponseBody, SimilarWordEntry} from './types'
 
 const router = express.Router()
 
 const fetchWordsSimilarTo = (word: String): Promise<string | null> =>
   axios.get<DataMuseSimilarWordsResponseBody>(`https://api.datamuse.com/words?sl=${word}`)
-    .then(r => r.data.map(e => e.word).join(','))
+    .then(r => r.data.map((e: SimilarWordEntry) => e.word).join(','))
     .catch(() => null)
 
 
