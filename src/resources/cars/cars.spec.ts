@@ -8,6 +8,11 @@ const dataMuseWordsResponseBody = [
   {'word': 'Here', 'score': 95, 'numSyllables': 2},
 ]
 
+
+const mockDataMuseApi = (carMake: string) => {
+  const dataMuseApiMock = nock('https://api.datamuse.com')
+  dataMuseApiMock.get(`/words?sl=${carMake}`).reply(200,dataMuseWordsResponseBody)
+}
 describe('POST /cars', () => {
 
 
@@ -92,8 +97,7 @@ describe('GET /cars/:id when requesting a car id that exists and the word simila
   let getResponse: request.Response
 
   beforeAll(async () => {
-    const dataMuseApiMock = nock('https://api.datamuse.com')
-    dataMuseApiMock.get(`/words?sl=${carBody.make}`).reply(200,dataMuseWordsResponseBody)
+    mockDataMuseApi(carBody.make)
 
     const postResponse = await request(app)
       .post('/cars').send(carBody)
@@ -119,7 +123,7 @@ describe('GET /cars/:id when requesting a car id that exists and the word simila
   })
 
   it('returns the similar words as a string', async () => {
-    expect(getResponse.body.similarWordsToCarMake).toBe('Test,Words,Here')
+    expect(getResponse.body.similarWordsToMake).toBe('Test,Words,Here')
   })
 })
 
@@ -134,6 +138,8 @@ describe('DELETE /cars/:id when deleting a car id that exists', () => {
       colour: 'Blue',
       year: 2008,
     }
+
+    mockDataMuseApi(carBody.make)
 
     const postResponse = await request(app)
       .post('/cars').send(carBody)

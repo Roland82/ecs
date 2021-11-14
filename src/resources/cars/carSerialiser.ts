@@ -7,6 +7,7 @@ const serialiseCar = (car: Car) => {
     model: car.model,
     year: car.year,
     colour: car.colour,
+    similarWordsToMake: car.wordsSimilarToMake,
   }
 }
 
